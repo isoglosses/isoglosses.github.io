@@ -29,7 +29,8 @@ node scripts/build.mjs      # writes web/data.json
 cd web && python3 -m http.server 8765
 ```
 
-Deploy with `npx firebase-tools deploy --only hosting` (serves `web/`).
+Live at <https://isoglosses.github.io>. Every push to `main` publishes `web/`
+through GitHub Pages (`.github/workflows/pages.yml`).
 
 ## Adding services
 
