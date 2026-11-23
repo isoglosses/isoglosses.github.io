@@ -35,7 +35,8 @@ export class Sonifier {
   // voice: index of the language (0-5); octave: 3-6; velocity: 0-1;
   // when: AudioContext time in seconds.
   note(voice, octave, velocity, when) {
-    if (!this.ctx || !this.enabled) return;
+    // audio still switched off by the browser: skip the note rather than stack it up for later
+    if (!this.ctx || !this.enabled || this.ctx.state !== "running") return;
     const freq = C4 * 2 ** ((SCALE[voice] + 12 * (octave - 4)) / 12);
     // High notes carry more than low ones; even them out a little.
     const level = velocity * (octave >= 6 ? 0.55 : octave === 5 ? 0.8 : 1);

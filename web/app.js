@@ -573,7 +573,8 @@ let lastFrame = 0;
 let scheduledSegment = -1;
 
 async function play() {
-  await sound.start();
+  // the picture never waits for sound: a browser that keeps audio off still plays the change, just silently
+  sound.start().catch(() => {});
   if (state.t >= LATEST) state.t = 0;
   state.playing = true;
   scheduledSegment = -1;
