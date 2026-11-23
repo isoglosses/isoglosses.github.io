@@ -1,0 +1,17 @@
+{
+  "name": "mother-tongue-project",
+  "version": "1.0.0",
+  "description": "Languages spoken, services offered and gaps across FCPS high school attendance areas",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "fetch": "./scripts/fetch.sh",
+    "serve": "cd web && python3 -m http.server 8765"
+  },
+  "type": "module",
+  "dependencies": {
+    "@turf/boolean-point-in-polygon": "^7.4.0",
+    "@turf/simplify": "^7.4.0",
+    "@turf/truncate": "^7.4.0"
+  },
+  "private": true
+}

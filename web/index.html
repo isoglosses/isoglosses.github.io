@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mother Tongue Project</title>
+  <meta name="description" content="Which languages are spoken where in Fairfax County, where help is available in them, and how that has changed, mapped onto FCPS high school attendance areas.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Fairfax County</span>
+      <h1>Mother Tongue Project</h1>
+    </div>
+    <nav class="modes" aria-label="Map modes">
+      <button data-mode="speakers" aria-pressed="true">Speakers</button>
+      <button data-mode="services" aria-pressed="false">Services</button>
+      <button data-mode="gaps" aria-pressed="false">Gaps</button>
+      <button data-mode="time" aria-pressed="false">Over time</button>
+      <button data-mode="about" aria-pressed="false">About</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="map-wrap" aria-label="Map">
+      <canvas id="dots" aria-hidden="true"></canvas>
+      <svg id="map" role="img" aria-labelledby="map-title"><title id="map-title">Map of FCPS high school attendance areas</title></svg>
+      <canvas id="flash" aria-hidden="true"></canvas>
+      <div id="tooltip" class="tooltip" role="status" hidden></div>
+    </section>
+
+    <aside class="panel" id="panel"></aside>
+  </main>
+
+  <article class="about" id="about" hidden>
+    <div class="about-inner">
+      <p class="eyebrow">About</p>
+      <h2>What can you get done in your own language, and where?</h2>
+      <p>Fairfax County is home to more than 300,000 people who speak a language other than English at home. Some of them, often older immigrants, speak English less than "very well." Whether daily life works for them depends a great deal on where they live: a Korean-speaking grandparent near Annandale can shop, worship, bank and read the news in Korean, while the same person a few miles away may not.</p>
+      <p>This project maps that difference onto the 24 FCPS high school attendance areas, which are units families already know.</p>
+
+      <h3>The four views</h3>
+      <dl>
+        <dt>Speakers</dt><dd>Where people speak each language at home. One dot is 25 speakers, placed only in census blocks where people live.</dd>
+        <dt>Services</dt><dd>Places where you can get something done in each language: groceries, worship, government offices, libraries, banks, senior centers, newspapers, and music and culture. Every entry is collected and checked by hand. No existing dataset records this, so this layer grows as the research goes on.</dd>
+        <dt>Gaps</dt><dd>Where many residents speak English less than "very well" but few services are available in their language.</dd>
+        <dt>Over time</dt><dd>How each language changed across three census periods, and how many people of each background still speak the language at home. Press play to hear it: each language is a note of a pentatonic scale, and northern areas sound higher than southern ones.</dd>
+      </dl>
+
+      <h3>Method</h3>
+      <p>Language and heritage counts come from the U.S. Census Bureau's American Community Survey, five-year estimates for 2010–14, 2015–19 and 2020–24. They are published for census tracts, which do not line up with school boundaries. Each tract's counts are split among attendance areas by where its residents live, using census block populations: 2010 blocks for the first two periods and 2020 blocks for the last.</p>
+      <p>"Heritage" means Hispanic or Latino origin for Spanish, Arab ancestry for Arabic, and Korean, Chinese (including Taiwanese), Vietnamese or Filipino origin for the others. The heritage counts include people of all ages, while the language counts include people 5 and older. That makes the share who speak the language at home a slight underestimate.</p>
+      <p>The survey is a sample, so small numbers in a single area carry wide margins of error. Read differences between neighboring areas with care, and prefer the larger patterns.</p>
+
+      <h3>Sources</h3>
+      <ul id="sources"></ul>
+
+      <p class="muted">Ideas first sketched in August 2026. Data last built <span id="built"></span>.</p>
+    </div>
+  </article>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

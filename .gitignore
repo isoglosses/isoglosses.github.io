@@ -1,0 +1,4 @@
+node_modules/
+data/raw/
+.firebase/
+.DS_Store
