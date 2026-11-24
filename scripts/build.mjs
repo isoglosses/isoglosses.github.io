@@ -11,7 +11,7 @@
 //   speakers  people 5+ who speak it at home
 //   limited   of those, people who speak English less than "very well"
 //   heritage  people of that background, all ages (Hispanic or Latino origin;
-//             Korean / Chinese incl. Taiwanese / Vietnamese / Filipino, Asian
+//             Korean / Chinese / Vietnamese / Filipino, Asian
 //             alone; Arab ancestry)
 //
 // Tract -> attendance area: every populated census block (2010 blocks for the
@@ -36,7 +36,7 @@ const LABELS = {
   arabic: "Arabic", tagalog: "Tagalog",
 };
 const HERITAGE_LABELS = {
-  spanish: "Hispanic or Latino", korean: "Korean", chinese: "Chinese (incl. Taiwanese)",
+  spanish: "Hispanic or Latino", korean: "Korean", chinese: "Chinese",
   vietnamese: "Vietnamese", arabic: "Arab ancestry", tagalog: "Filipino",
 };
 
