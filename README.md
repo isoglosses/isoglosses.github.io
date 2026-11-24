@@ -10,7 +10,7 @@ Ideas first sketched in August 2026.
 
 - **Speakers**: people 5+ who speak Spanish, Chinese, Korean, Vietnamese, Arabic
   or Tagalog at home. One dot is 25 speakers, placed in census blocks where
-  people live. Or shade each area by its share of residents.
+  people live. Or shade each area by its share of residents. Any of the six languages can be on at once, each in its own color.
 - **Services**: places that serve people in each language, collected and checked
   by hand in `web/services.csv`. Music and culture count as a service.
 - **Gaps**: residents who speak English less than "very well," set against the
@@ -19,6 +19,8 @@ Ideas first sketched in August 2026.
   group that still speaks the language at home. Press play to hear it: each
   language is a note of a C pentatonic scale with its own instrument, and the
   octave follows geography (north is higher).
+
+Every map zooms: scroll or pinch to zoom, drag to pan, or use the +, − and ⤢ buttons (⤢ shows the whole county again). Dots keep their size on screen, so they spread apart as you zoom in.
 
 ## Running it
 

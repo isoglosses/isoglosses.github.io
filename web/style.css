@@ -13,10 +13,13 @@
   --area-stroke: #ffffff;
   --accent: #0071e3;
 
-  /* Categorical slots (validated all-pairs for three at once). */
+  /* Categorical slots: one per language, so all six can be on at once. */
   --s1: #2a78d6;
   --s2: #eb6834;
   --s3: #1baf7a;
+  --s4: #8b55d4;
+  --s5: #d6407a;
+  --s6: #b8891a;
 
   /* Sequential blue, low to high. */
   --q1: #cde2fb;
@@ -52,6 +55,9 @@
     --s1: #3987e5;
     --s2: #d95926;
     --s3: #199e70;
+    --s4: #9b6be8;
+    --s5: #e2578a;
+    --s6: #d1a32e;
     --q1: #104281;
     --q2: #1c5cab;
     --q3: #2a78d6;
@@ -79,6 +85,9 @@
   --s1: #3987e5;
   --s2: #d95926;
   --s3: #199e70;
+  --s4: #9b6be8;
+  --s5: #e2578a;
+  --s6: #d1a32e;
   --q1: #104281;
   --q2: #1c5cab;
   --q3: #2a78d6;
@@ -269,3 +278,13 @@ details.table th { color: var(--muted); font-weight: 500; }
   .about-inner { padding: 32px 16px 64px; }
   .about h2 { font-size: 27px; }
 }
+
+/* zoom: drag to pan, scroll or pinch to zoom, and these buttons */
+.map-wrap svg { cursor: grab; }
+.map-wrap svg:active { cursor: grabbing; }
+.map-wrap .area { vector-effect: non-scaling-stroke; }
+.zoom-ctl { position: absolute; right: 12px; bottom: 12px; z-index: 3; display: flex; flex-direction: column; gap: 6px; }
+.zoom-ctl button { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--edge); background: var(--surface); color: inherit;
+  font: 600 20px/1 system-ui, sans-serif; cursor: pointer; display: grid; place-items: center; box-shadow: 0 2px 6px var(--ring); }
+.zoom-ctl button:hover { border-color: var(--accent); }
+.zoom-ctl button.reset { font-size: 13px; }

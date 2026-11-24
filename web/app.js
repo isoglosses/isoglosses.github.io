@@ -27,7 +27,7 @@ const state = {
   mode: "speakers",
   speakersView: "dots", // dots | share
   timeView: "dots", // dots | kept
-  picked: ["chinese", "korean", "vietnamese"], // up to three, for dot views
+  picked: ["chinese", "korean", "vietnamese"], // any number, for dot views
   slot: { chinese: 0, korean: 1, vietnamese: 2 }, // a language keeps its color while picked
   lang: "chinese", // the one language for single-language views
   t: LATEST, // position on the timeline, 0..LATEST (fractional while playing)
@@ -48,9 +48,23 @@ const projection = d3.geoMercator();
 const path = d3.geoPath(projection);
 const features = data.boundaries.features;
 
-const areaLayer = svg.append("g");
-const placeLayer = svg.append("g");
-const labelLayer = svg.append("g");
+// everything drawn in the SVG sits in one group the zoom moves; the dot canvases follow the same transform (zt)
+const zoomLayer = svg.append("g");
+const areaLayer = zoomLayer.append("g");
+const placeLayer = zoomLayer.append("g");
+const labelLayer = zoomLayer.append("g");
+let zt = d3.zoomIdentity;
+const zoom = d3.zoom()
+  .scaleExtent([1, 12])
+  .on("zoom", (e) => {
+    zt = e.transform;
+    zoomLayer.attr("transform", zt);
+    // labels and markers keep their size on screen
+    labelLayer.selectAll("text").style("font-size", `${11 / zt.k}px`);
+    placeLayer.selectAll("circle").attr("r", 5 / zt.k).attr("stroke-width", 1.5 / zt.k);
+    drawDots();
+  });
+svg.call(zoom).on("dblclick.zoom", null);
 
 // Octave band per school, from north (high) to south (low).
 const centroidLat = Object.fromEntries(features.map((f) => [f.properties.name, d3.geoCentroid(f)[1]]));
@@ -63,7 +77,7 @@ function readColors() {
   const css = getComputedStyle(document.documentElement);
   const v = (n) => css.getPropertyValue(n).trim();
   colors = {
-    slots: [v("--s1"), v("--s2"), v("--s3")],
+    slots: [v("--s1"), v("--s2"), v("--s3"), v("--s4"), v("--s5"), v("--s6")],
     seq: [v("--q1"), v("--q2"), v("--q3"), v("--q4"), v("--q5")],
     bivar: [0, 1, 2].map((r) => [0, 1, 2].map((c) => v(`--b${r}${c}`))),
     muted: v("--muted"),
@@ -85,6 +99,10 @@ function resize() {
   }
   const pad = Math.min(28, size.w * 0.04);
   projection.fitExtent([[pad, pad], [size.w - pad, size.h - pad]], data.boundaries);
+  zoom.extent([[0, 0], [size.w, size.h]]).translateExtent([[0, 0], [size.w, size.h]]);
+  zt = d3.zoomIdentity;
+  zoomLayer.attr("transform", null);
+  svg.property("__zoom", d3.zoomIdentity);
 
   screenDots = PERIODS.map((p) =>
     Object.fromEntries(LANGS.map((k) => {
@@ -122,6 +140,7 @@ function resize() {
     .attr("class", "label")
     .attr("x", (f) => path.centroid(f)[0])
     .attr("y", (f) => path.centroid(f)[1])
+    .style("font-size", `${11 / zt.k}px`)
     .text((f) => f.properties.name);
 
   draw();
@@ -213,7 +232,8 @@ function drawDots() {
     (state.mode === "time" && state.timeView === "dots");
   if (!showDots || !screenDots.length) return;
 
-  const r = size.w < 560 ? 0.9 : 1.25;
+  ctx.setTransform(size.dpr * zt.k, 0, 0, size.dpr * zt.k, size.dpr * zt.x, size.dpr * zt.y);
+  const r = (size.w < 560 ? 0.9 : 1.25) / zt.k;
   const layers = [];
   if (state.mode === "time") {
     const i = Math.min(Math.floor(state.t), LATEST - 1);
@@ -247,7 +267,8 @@ function drawPlaces() {
     .data(rows)
     .join("circle")
     .attr("class", "place")
-    .attr("r", 5)
+    .attr("r", 5 / zt.k)
+    .attr("stroke-width", 1.5 / zt.k)
     .attr("cx", (s) => projection([s.lon, s.lat])[0])
     .attr("cy", (s) => projection([s.lon, s.lat])[1])
     .attr("fill", (s) => (s.category === "Music & culture" ? colors.slots[1] : colors.slots[0]))
@@ -348,12 +369,8 @@ function togglePicked(k) {
     state.picked = state.picked.filter((x) => x !== k);
     delete state.slot[k];
   } else {
-    if (state.picked.length === 3) {
-      const oldest = state.picked.shift();
-      delete state.slot[oldest];
-    }
     const used = new Set(Object.values(state.slot));
-    state.slot[k] = [0, 1, 2].find((s) => !used.has(s));
+    state.slot[k] = [0, 1, 2, 3, 4, 5].find((s) => !used.has(s));
     state.picked.push(k);
   }
   state.lang = k;
@@ -375,7 +392,7 @@ function speakersPanel() {
     <h2>Who speaks what, where</h2>
     <p>People 5 and older who speak each language at home, ${PERIODS[LATEST].label}.</p>
     ${seg("sview", [["dots", "Dots"], ["share", "Share of residents"]], state.speakersView)}
-    <h3>${dots ? "Languages (up to three at once)" : "Language"}</h3>
+    <h3>${dots ? "Languages (pick any)" : "Language"}</h3>
     ${langChips({ multi: dots })}
     <h3>Key</h3>
     ${dots
@@ -484,7 +501,7 @@ function timePanel() {
     <p class="note">Each language is one note of a pentatonic scale with its own instrument. Northern areas play higher and southern areas lower. Louder notes mean faster growth, and soft low notes mean a decline.</p>
     <h3>Show</h3>
     ${seg("tview", [["dots", "Dots"], ["kept", "Kept at home"]], state.timeView)}
-    <h3>${dots ? "Languages (up to three at once)" : "Language"}</h3>
+    <h3>${dots ? "Languages (pick any)" : "Language"}</h3>
     ${langChips({ multi: dots })}
     ${dots ? "" : `<h3>Key: share of ${HERITAGE[k]} residents who speak ${LABEL[k]} at home</h3>
       ${rampLegend(colors.seq, ["", "40%", "55%", "70%", "85%"])}
@@ -643,7 +660,7 @@ function drawFlashes(now) {
     ctx.strokeStyle = f.color;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(f.x, f.y, 2 + k * 12, 0, Math.PI * 2);
+    ctx.arc(zt.applyX(f.x), zt.applyY(f.y), 2 + k * 12, 0, Math.PI * 2);
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -689,5 +706,18 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () 
   draw();
 });
 new ResizeObserver(() => resize()).observe(wrap);
+// zoom buttons (scroll or pinch works too)
+const zoomCtl = document.createElement("div");
+zoomCtl.className = "zoom-ctl";
+zoomCtl.innerHTML = '<button type="button" data-z="in" aria-label="Zoom in" title="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out" title="Zoom out">−</button><button type="button" class="reset" data-z="reset" aria-label="Show the whole county" title="Show the whole county">⤢</button>';
+wrap.appendChild(zoomCtl);
+zoomCtl.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const t = svg.transition().duration(250);
+  if (b.dataset.z === "in") zoom.scaleBy(t, 1.6);
+  else if (b.dataset.z === "out") zoom.scaleBy(t, 1 / 1.6);
+  else zoom.transform(t, d3.zoomIdentity);
+});
 const fromHash = location.hash.slice(1);
 setMode(["speakers", "services", "gaps", "time", "about"].includes(fromHash) ? fromHash : "speakers");
