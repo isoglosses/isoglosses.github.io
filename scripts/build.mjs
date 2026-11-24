@@ -88,13 +88,15 @@ function sequence(dir, year, seq, start) {
 function period2024() {
   const lang = tableBased("c16001.dat");
   const asian = tableBased("b02015.dat");
+  // heritage counts people of that origin alone or in any combination (B02018), so mixed-heritage residents count too
+  const any = tableBased("b02018.dat");
   const hisp = tableBased("b03003.dat");
   const arab = tableBased("b04006.dat");
   const tracts = {};
   for (const [g, v] of Object.entries(lang)) {
-    const a = asian[g] || (() => 0), h = hisp[g] || (() => 0), r = arab[g] || (() => 0);
+    const n = any[g] || (() => 0), h = hisp[g] || (() => 0), r = arab[g] || (() => 0);
     const heritage = {
-      spanish: h(3), korean: a(5), chinese: a(2) + a(8), vietnamese: a(19), arabic: r(6), tagalog: a(12),
+      spanish: h(3), korean: n(5), chinese: n(2) + n(8), vietnamese: n(19), arabic: r(6), tagalog: n(12),
     };
     tracts[g] = { pop: v(1), ...Object.fromEntries(LANGS.map((k) => [k, [v(C16001_LINES[k]), v(C16001_LINES[k] + 2), heritage[k]]])) };
   }
@@ -105,13 +107,14 @@ function period2019() {
   const d = "acs2019";
   const lang = sequence(d, 2019, "0044", 147);
   const asian = sequence(d, 2019, "0003", 78);
+  const any = sequence(d, 2019, "0003", 169); // B02018, alone or in any combination
   const hisp = sequence(d, 2019, "0004", 59);
   const arab = sequence(d, 2019, "0006", 7);
   const tracts = {};
   for (const [g, v] of Object.entries(lang)) {
-    const a = asian[g], h = hisp[g], r = arab[g];
+    const n = any[g], h = hisp[g], r = arab[g];
     const heritage = {
-      spanish: h(3), korean: a(12), chinese: a(7) + a(20), vietnamese: a(22), arabic: r(6), tagalog: a(8),
+      spanish: h(3), korean: n(12), chinese: n(7) + n(20), vietnamese: n(22), arabic: r(6), tagalog: n(8),
     };
     tracts[g] = { pop: v(1), ...Object.fromEntries(LANGS.map((k) => [k, [v(C16001_LINES[k]), v(C16001_LINES[k] + 2), heritage[k]]])) };
   }
@@ -246,7 +249,7 @@ const out = {
   meta: {
     title: "Fairfax County Mother Tongue Project",
     sources: [
-      "American Community Survey 5-year estimates (2010–14, 2015–19, 2020–24), U.S. Census Bureau: language spoken at home (B16001 / C16001), Asian groups (B02006 / B02015), Hispanic origin (B03003), ancestry (B04006)",
+      "American Community Survey 5-year estimates (2010–14, 2015–19, 2020–24), U.S. Census Bureau: language spoken at home (B16001 / C16001), Asian groups alone (B02006, 2010–14) and alone or in any combination (B02018, 2015–19 and 2020–24), Hispanic origin (B03003), ancestry (B04006)",
       "2010 and 2020 Census block populations (TIGERweb)",
       "FCPS high school attendance areas, 2026–27 (Fairfax County GIS)",
     ],

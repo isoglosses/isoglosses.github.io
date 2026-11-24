@@ -11,7 +11,7 @@ TIGER=https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb
 FAIRFAX="STATE%3D%2751%27+AND+COUNTY+IN+(%27059%27,%27600%27)"
 
 # 2020-24: table-based files (one per table, all geographies).
-for t in c16001 b02015 b03003 b04006; do
+for t in c16001 b02015 b02018 b03003 b04006; do
   curl -sfo "$t.dat" "$ACS/2024/table-based-SF/data/5YRData/acsdt5y2024-$t.dat"
 done
 

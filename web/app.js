@@ -2,6 +2,8 @@ import { Sonifier } from "./sound.js";
 
 const data = await fetch("data.json").then((r) => r.json());
 const services = await d3.csv("services.csv").catch(() => []);
+// towns and cities as reference points (OpenStreetMap coordinates), drawn instead of the school-area names unless asked
+const towns = await fetch("places.json").then((r) => r.json()).catch(() => []);
 
 const LANGS = data.langs.map((l) => l.key);
 const LABEL = Object.fromEntries(data.langs.map((l) => [l.key, l.label]));
@@ -53,6 +55,7 @@ const zoomLayer = svg.append("g");
 const areaLayer = zoomLayer.append("g");
 const placeLayer = zoomLayer.append("g");
 const labelLayer = zoomLayer.append("g");
+const townLayer = zoomLayer.append("g").attr("class", "towns");
 let zt = d3.zoomIdentity;
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
@@ -61,6 +64,9 @@ const zoom = d3.zoom()
     zoomLayer.attr("transform", zt);
     // labels and markers keep their size on screen
     labelLayer.selectAll("text").style("font-size", `${11 / zt.k}px`);
+    townLayer.selectAll("text").style("font-size", `${11.5 / zt.k}px`).attr("dy", -6 / zt.k);
+    townLayer.selectAll("circle").attr("r", 2.6 / zt.k).attr("stroke-width", 1.2 / zt.k);
+    townLayer.selectAll("g.town").style("display", (t) => (t.major || zt.k >= 2 ? null : "none"));
     placeLayer.selectAll("circle").attr("r", 5 / zt.k).attr("stroke-width", 1.5 / zt.k);
     drawDots();
   });
@@ -142,6 +148,20 @@ function resize() {
     .attr("y", (f) => path.centroid(f)[1])
     .style("font-size", `${11 / zt.k}px`)
     .text((f) => f.properties.name);
+
+  // towns: a dot and a name for each, shown when Labels is set to Towns
+  const tg = townLayer.selectAll("g.town").data(towns).join((enter) => {
+    const g = enter.append("g").attr("class", "town");
+    g.append("circle");
+    g.append("text");
+    return g;
+  });
+  tg.attr("transform", (t) => { const [x, y] = projection([t.lon, t.lat]); return `translate(${x},${y})`; });
+  tg.select("circle").attr("r", 2.6 / zt.k).attr("stroke-width", 1.2 / zt.k);
+  tg.select("text").attr("dy", -6 / zt.k).style("font-size", `${11.5 / zt.k}px`).text((t) => t.name);
+  // the best-known towns at county view; smaller places join once you zoom in
+  tg.style("display", (t) => (t.major || zt.k >= 2 ? null : "none"));
+  showLabels();
 
   draw();
 }
@@ -233,7 +253,8 @@ function drawDots() {
   if (!showDots || !screenDots.length) return;
 
   ctx.setTransform(size.dpr * zt.k, 0, 0, size.dpr * zt.k, size.dpr * zt.x, size.dpr * zt.y);
-  const r = (size.w < 560 ? 0.9 : 1.25) / zt.k;
+  // dots grow gently as you zoom (square root of the zoom, capped), so up close they stay big enough to see and keep their color
+  const r = (size.w < 560 ? 0.9 : 1.25) * Math.min(3.5, Math.sqrt(zt.k)) / zt.k;
   const layers = [];
   if (state.mode === "time") {
     const i = Math.min(Math.floor(state.t), LATEST - 1);
@@ -705,6 +726,27 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () 
   renderPanel();
   draw();
 });
+// map labels: towns (reference points people know) or the school attendance areas
+function showLabels() {
+  const towns = state.labels !== "schools";
+  townLayer.style("display", towns ? null : "none");
+  labelLayer.style("display", towns ? "none" : null);
+  labelCtl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lb === (towns ? "towns" : "schools"))));
+}
+const labelCtl = document.createElement("div");
+labelCtl.className = "label-ctl seg";
+labelCtl.setAttribute("role", "group");
+labelCtl.setAttribute("aria-label", "Map labels");
+labelCtl.innerHTML = '<button type="button" data-lb="towns">Towns</button><button type="button" data-lb="schools">School areas</button>';
+wrap.appendChild(labelCtl);
+labelCtl.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  state.labels = b.dataset.lb;
+  try { localStorage.setItem("mt-labels", state.labels); } catch (_) {}
+  showLabels();
+});
+try { state.labels = localStorage.getItem("mt-labels") || "towns"; } catch (_) { state.labels = "towns"; }
 new ResizeObserver(() => resize()).observe(wrap);
 // zoom buttons (scroll or pinch works too)
 const zoomCtl = document.createElement("div");

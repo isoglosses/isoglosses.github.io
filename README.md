@@ -51,8 +51,9 @@ One row per place in `web/services.csv`:
 ## Method notes
 
 - Language: ACS table C16001 (B16001 for 2010–14). Heritage: Hispanic or
-  Latino origin (B03003), Asian groups alone (B02006 / B02015), Arab ancestry
-  (B04006).
+  Latino origin (B03003), Asian groups alone or in any combination (B02018,
+  2015–19 and 2020–24; 2010–14 only has the single-origin table B02006, so its
+  heritage counts run lower), Arab ancestry (B04006).
 - Tracts are split among attendance areas by census block population (2010
   blocks for the first two periods, 2020 blocks for the last).
 - ACS figures are sample estimates. Small numbers for a single area have wide
