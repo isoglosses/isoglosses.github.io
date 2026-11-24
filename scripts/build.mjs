@@ -11,7 +11,7 @@
 //   speakers  people 5+ who speak it at home
 //   limited   of those, people who speak English less than "very well"
 //   heritage  people of that background, all ages (Hispanic or Latino origin;
-//             Korean / Chinese / Vietnamese / Filipino, Asian
+//             Chinese / Korean / Vietnamese / Filipino, Asian
 //             alone; Arab ancestry)
 //
 // Tract -> attendance area: every populated census block (2010 blocks for the
@@ -30,7 +30,7 @@ const DOT_SIZE = 25;
 let seed = 20261122;
 const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32;
 
-const LANGS = ["spanish", "korean", "chinese", "vietnamese", "arabic", "tagalog"];
+const LANGS = ["spanish", "chinese", "korean", "vietnamese", "arabic", "tagalog"];
 const LABELS = {
   spanish: "Spanish", korean: "Korean", chinese: "Chinese", vietnamese: "Vietnamese",
   arabic: "Arabic", tagalog: "Tagalog",

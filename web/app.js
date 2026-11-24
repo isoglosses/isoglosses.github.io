@@ -27,9 +27,9 @@ const state = {
   mode: "speakers",
   speakersView: "dots", // dots | share
   timeView: "dots", // dots | kept
-  picked: ["korean", "chinese", "vietnamese"], // up to three, for dot views
-  slot: { korean: 0, chinese: 1, vietnamese: 2 }, // a language keeps its color while picked
-  lang: "korean", // the one language for single-language views
+  picked: ["chinese", "korean", "vietnamese"], // up to three, for dot views
+  slot: { chinese: 0, korean: 1, vietnamese: 2 }, // a language keeps its color while picked
+  lang: "chinese", // the one language for single-language views
   t: LATEST, // position on the timeline, 0..LATEST (fractional while playing)
   playing: false,
 };

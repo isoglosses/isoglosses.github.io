@@ -8,7 +8,7 @@ Ideas first sketched in August 2026.
 
 ## Views
 
-- **Speakers**: people 5+ who speak Spanish, Korean, Chinese, Vietnamese, Arabic
+- **Speakers**: people 5+ who speak Spanish, Chinese, Korean, Vietnamese, Arabic
   or Tagalog at home. One dot is 25 speakers, placed in census blocks where
   people live. Or shade each area by its share of residents.
 - **Services**: places that serve people in each language, collected and checked
@@ -40,7 +40,7 @@ One row per place in `web/services.csv`:
 |---|---|
 | name | Example Korean Market |
 | category | `Grocery & food`, `Worship`, `Government & civic`, `Library`, `Banking`, `Senior center`, `Media`, `Music & culture`, `Other` |
-| languages | language keys separated by `;`, e.g. `korean;chinese` |
+| languages | language keys separated by `;`, e.g. `chinese;korean` |
 | lat, lon | decimal degrees |
 | address | street address |
 | source | how it was checked (visit, phone call, website) |
